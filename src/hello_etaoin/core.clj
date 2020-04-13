@@ -35,5 +35,14 @@
   ;; stops Firefox and HTTP server
   (quit driver))
 
+(defn count-houses [location]
+  (def driver (firefox {:headless true}))
+
+  (go driver "https://www.seloger.com/recherche-avancee.html")
+  (wait-has-text driver {:css ".search_panel_footer .count"} "annonces")
+
+  (get-element-inner-html driver {:css ".search_panel_footer .count strong"}))
+
 (comment
-  (hello))
+  (hello)
+  (count-houses "montigny sur loing"))

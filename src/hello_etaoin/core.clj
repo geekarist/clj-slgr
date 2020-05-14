@@ -2,9 +2,9 @@
   (:require [etaoin.keys :as k])
   (:use etaoin.api))
 
-(defn hello []
+(defonce driver (firefox {:headless false}))
 
-  (def driver (firefox {:headless false}))
+(defn hello []
 
   ;; let's perform a quick Wiki session
   (go driver "https://en.wikipedia.org/")
@@ -47,7 +47,7 @@
 
   (quit driver))
 
-(defn find-property-ads [driver location]
+(defn get-property-ad-pages [driver location]
   (doto-wait 1 driver
              (go "https://www.seloger.com/recherche-avancee.html")
              (wait-has-text {:css ".search_panel_footer .count"} "annonces")
@@ -60,10 +60,10 @@
              (fill-active k/tab)
              (fill-active k/enter)
              (click {:css ".containerRight .txt_rechercher"}))
-  (wait 10))
+  (get-source driver))
 
 (comment
   (hello)
   (count-houses "montigny sur loing")
-  (with-firefox {:headless false} drv (find-property-ads drv "montigny-sur-loing"))
+  (get-property-ad-pages driver "montigny-sur-loing")
   )

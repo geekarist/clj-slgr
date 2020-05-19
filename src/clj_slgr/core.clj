@@ -1,4 +1,4 @@
-(ns hello-etaoin.core
+(ns clj-slgr.core
   (:require [etaoin.keys :as k])
   (:use etaoin.api))
 
@@ -62,8 +62,9 @@
              (click {:css ".containerRight .txt_rechercher"}))
   (get-source driver))
 
+
 (comment
-  (hello)
-  (count-houses "montigny sur loing")
-  (get-property-ad-pages driver "montigny-sur-loing")
-  )
+  (use '[clj-slgr.core :as slgr])
+  (slgr/hello)
+  (slgr/count-houses "montigny sur loing")
+  (slgr/get-property-ad-pages driver "montigny-sur-loing"))

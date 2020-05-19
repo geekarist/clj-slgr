@@ -1,4 +1,4 @@
-(ns hello-etaoin.core-test
+(ns clj_slgr.core-test
   (:require [clojure.test :refer :all]
             [hello-etaoin.core :refer :all]))
 

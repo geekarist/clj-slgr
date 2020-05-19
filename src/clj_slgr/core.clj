@@ -47,7 +47,7 @@
 
   (quit driver))
 
-(defn get-property-ad-pages [driver location]
+(defn get-houses-pages [location]
   (doto-wait 1 driver
              (go "https://www.seloger.com/recherche-avancee.html")
              (wait-has-text {:css ".search_panel_footer .count"} "annonces")
@@ -60,11 +60,15 @@
              (fill-active k/tab)
              (fill-active k/enter)
              (click {:css ".containerRight .txt_rechercher"}))
-  (get-source driver))
+  (while (wait-visible driver {:css ".next"})
+    (prn "Clicking on Next button")
+    (doto-wait 1 driver
+               (click {:css ".next"})))
+  (prn "Done!"))
 
 
 (comment
   (use '[clj-slgr.core :as slgr])
   (slgr/hello)
   (slgr/count-houses "montigny sur loing")
-  (slgr/get-property-ad-pages driver "montigny-sur-loing"))
+  (slgr/get-houses-pages "montigny-sur-loing"))

@@ -47,7 +47,7 @@
 
   (quit driver))
 
-(defn get-houses-pages [location]
+(defn navigate-to-results [location]
   (doto-wait 1 driver
              (go "https://www.seloger.com/recherche-avancee.html")
              (wait-has-text {:css ".search_panel_footer .count"} "annonces")
@@ -59,13 +59,21 @@
              (click {:css ".c-places input[type=\"text\"]"})
              (fill-active k/tab)
              (fill-active k/enter)
-             (click {:css ".containerRight .txt_rechercher"}))
-  (while (wait-visible driver {:css ".next"})
-    (prn "Clicking on Next button")
-    (doto-wait 1 driver
-               (click {:css ".next"})))
-  (prn "Done!"))
+             (click {:css ".containerRight .txt_rechercher"})))
 
+(defn get-result-pages []
+  (loop [previous-pages []]
+    (let [current-page (get-source driver)
+          prev-and-current-pages (conj previous-pages current-page)
+          last-page? (invisible? driver {:css ".next"})]
+      (click driver {:css ".next"})
+      (if last-page?
+        prev-and-current-pages
+        (recur prev-and-current-pages)))))
+
+(defn get-houses-pages [location]
+  (navigate-to-results location)
+  (get-result-pages))
 
 (comment
   (use '[clj-slgr.core :as slgr])

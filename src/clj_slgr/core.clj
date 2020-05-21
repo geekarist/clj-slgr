@@ -66,10 +66,10 @@
     (let [current-page (get-source driver)
           prev-and-current-pages (conj previous-pages current-page)
           last-page? (invisible? driver {:css ".next"})]
-      (click driver {:css ".next"})
-      (if last-page?
-        prev-and-current-pages
-        (recur prev-and-current-pages)))))
+      (if last-page? prev-and-current-pages
+                     (do (click driver {:css ".next"})
+                         (wait driver 1)
+                         (recur prev-and-current-pages))))))
 
 (defn get-houses-pages [location]
   (navigate-to-results location)
@@ -79,4 +79,7 @@
   (use '[clj-slgr.core :as slgr])
   (slgr/hello)
   (slgr/count-houses "montigny sur loing")
-  (slgr/get-houses-pages "montigny-sur-loing"))
+  (slgr/get-houses-pages "montigny-sur-loing")
+  (-> "montigny-sur-loing"
+      slgr/get-houses-pages
+      count))

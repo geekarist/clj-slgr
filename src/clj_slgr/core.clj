@@ -33,8 +33,7 @@
   (refresh driver)
   (println "Page title:" (get-title driver))                ;; "Clojure - Wikipedia"
 
-  (quit driver)
-  )
+  (quit driver))
 
 (defn count-houses [location]
 
@@ -47,8 +46,10 @@
 
   (quit driver))
 
+(def default-delay 1.5)
+
 (defn navigate-to-results [location]
-  (doto-wait 1 driver
+  (doto-wait default-delay driver
              (go "https://www.seloger.com/recherche-avancee.html")
              (wait-has-text {:css ".search_panel_footer .count"} "annonces")
              (click {:css ".c-displayPlaces .containerList"})
@@ -68,7 +69,7 @@
           last-page? (invisible? driver {:css ".next"})]
       (if last-page? prev-and-current-pages
                      (do (click driver {:css ".next"})
-                         (wait driver 1)
+                         (wait driver default-delay)
                          (recur prev-and-current-pages))))))
 
 (defn get-houses-pages [location]
@@ -80,6 +81,6 @@
   (slgr/hello)
   (slgr/count-houses "montigny sur loing")
   (slgr/get-houses-pages "montigny-sur-loing")
-  (-> "montigny-sur-loing"
+  (-> "paris 12"
       slgr/get-houses-pages
       count))

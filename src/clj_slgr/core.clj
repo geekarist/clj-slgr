@@ -1,5 +1,6 @@
 (ns clj-slgr.core
-  (:require [etaoin.keys :as k])
+  (:require [etaoin.keys :as k]
+            [hickory.core :as hc])
   (:use etaoin.api))
 
 (defonce driver (firefox {:headless false}))
@@ -76,11 +77,16 @@
   (navigate-to-results location)
   (get-result-pages))
 
+(defn prn-ret [obj]
+  (prn obj)
+  obj)
+
 (comment
   (use '[clj-slgr.core :as slgr])
   (slgr/hello)
   (slgr/count-houses "montigny sur loing")
   (slgr/get-houses-pages "montigny-sur-loing")
-  (-> "paris 12"
-      slgr/get-houses-pages
-      count))
+  (->> "montigny-sur-loing"
+       slgr/get-houses-pages
+       (map hc/parse)
+       (map hc/as-hiccup)))

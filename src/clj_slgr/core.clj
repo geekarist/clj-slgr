@@ -7,7 +7,7 @@
 
 (def default-delay 1.5)
 
-(defn navigate-to-results [location]
+(defn get-first-result-page [location]
   (doto-wait default-delay driver
              (go "https://www.seloger.com/recherche-avancee.html")
              (wait-has-text {:css ".search_panel_footer .count"} "annonces")
@@ -19,21 +19,21 @@
              (click {:css ".c-places input[type=\"text\"]"})
              (fill-active k/tab)
              (fill-active k/enter)
-             (click {:css ".containerRight .txt_rechercher"})))
+             (click {:css ".containerRight .txt_rechercher"}))
+  (get-source driver))
 
-(defn get-result-pages []
-  (loop [previous-pages []]
-    (let [current-page (get-source driver)
-          prev-and-current-pages (conj previous-pages current-page)
-          last-page? (invisible? driver {:css ".next"})]
-      (if last-page? prev-and-current-pages
-                     (do (click driver {:css ".next"})
-                         (wait driver default-delay)
-                         (recur prev-and-current-pages))))))
+(defn get-next-result-page []
+  (if (visible? driver {:css ".next"})
+    (do (click driver {:css ".next"})
+        (wait driver default-delay)
+        (get-source driver))))
+
+(defn get-houses-pages-seq [location]
+  (cons (get-first-result-page location)
+        (repeatedly get-next-result-page)))
 
 (defn get-houses-pages [location]
-  (navigate-to-results location)
-  (get-result-pages))
+  (take-while some? (get-houses-pages-seq location)))
 
 (defn prn-ret [obj]
   (prn obj)
@@ -44,7 +44,10 @@
   (slgr/hello)
   (slgr/count-houses "montigny sur loing")
   (slgr/get-houses-pages "montigny-sur-loing")
-  (->> "montigny-sur-loing"
+  (get-first-result-page "cachan")
+  (get-next-result-page)
+  (->> "cachan"
        slgr/get-houses-pages
        (map hc/parse)
-       (map hc/as-hiccup)))
+       (map hc/as-hiccup)
+       (count)))

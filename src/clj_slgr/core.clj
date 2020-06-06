@@ -5,7 +5,7 @@
 
 (defonce driver (firefox {:headless false}))
 
-(def default-delay 2)
+(def default-delay 2)                                       ; TODO: Set delay to 1 and test it well
 
 (defn get-first-result-page [location]
   (prn "Getting first page...")
@@ -21,7 +21,7 @@
              (fill-active k/tab)
              (fill-active k/enter)
              (click {:css ".containerRight .txt_rechercher"}))
-  (wait default-delay)
+  (wait default-delay)                                      ; TODO: Wait "no result" or at least one result
   (get-source driver))
 
 (defn get-next-result-page []
@@ -50,6 +50,8 @@
   (get-first-result-page "cachan")
   (get-next-result-page)
   (get-houses-pages-seq "cachan")
+  ; TODO: Map to domain model
+  ; TODO: Test with lowest to highest latency
   (->> "val-de-marne"
        slgr/get-houses-pages
        (map hc/parse)
